@@ -1,14 +1,41 @@
 import { Link } from 'react-router-dom';
-import { Form, Input, Button } from 'antd';
+import { useState } from 'react';
+import { Form, Input, Button, Alert } from 'antd';
+import axios from 'axios';
 
 function Register() {
-  const onFinish = (values) => {
-    console.log('Success:', values);
+  const [message, setMessage] = useState(null);
+  const [messageType, setMessageType] = useState(null);
+
+  const onFinish = async (values) => {
+    try {
+        console.log('Posting to /auth/register with data:', {
+            username: values.username,
+            email: values.email,
+            contact_number: values.phone,
+            password: values.password,
+          });
+      const response = await axios.post('http://localhost:8080/auth/register', {
+        username: values.username,
+        email: values.email,
+        contact_number: values.phone,
+        password: values.password,
+      });
+
+      setMessage('Registration successful! Please log in.');
+      setMessageType('success');
+    } catch (error) {
+      setMessage(error.response?.data?.message || 'Registration failed. Please try again.');
+      setMessageType('error');
+    }
   };
 
   return (
     <div style={{ maxWidth: '400px', margin: '0 auto', padding: '20px' }}>
       <h2>Register Page</h2>
+
+      {message && <Alert message={message} type={messageType} showIcon style={{ marginBottom: '15px' }} />}
+
       <Form
         name="register"
         onFinish={onFinish}
@@ -32,6 +59,14 @@ function Register() {
           ]}
         >
           <Input type="email" placeholder="Email" />
+        </Form.Item>
+
+        <Form.Item
+          name="phone"
+          label="Phone Number"
+          rules={[{ required: true, message: 'Please input your phone number!' }]}
+        >
+          <Input type="tel" placeholder="Phone Number" />
         </Form.Item>
 
         <Form.Item
@@ -68,6 +103,7 @@ function Register() {
           </Button>
         </Form.Item>
       </Form>
+      
       <p>
         Already have an account? <Link to="/login">Login</Link>
       </p>
