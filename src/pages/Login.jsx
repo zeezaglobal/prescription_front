@@ -1,15 +1,32 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { Form, Input, Button, Card, Typography } from 'antd';
+import { Form, Input, Button, Card, Typography, message } from 'antd';
+import axios from 'axios';
 
 const { Title, Text } = Typography;
 
 function Login() {
   const navigate = useNavigate();
 
-  const onFinish = (values) => {
-    // Handle your login logic here, e.g., validation, API call
-    // After successful login, navigate to the form page
-    navigate('/doctorform'); // Replace '/form' with your desired route
+  const onFinish = async (values) => {
+    console.log('Input values:', values);
+    try {
+      // Send the login request to the API
+      const response = await axios.post('http://localhost:8080/auth/login', {
+        username: values.username,
+        password: values.password,
+      });
+
+      // Handle success (you can store the token, if any, and redirect)
+      if (response.status === 200) {
+        message.success('Login successful');
+        console.log('Output values:', response.data);
+        localStorage.setItem('jwt_token', response.data);
+        navigate('/doctorform'); // Redirect after successful login
+      }
+    } catch (error) {
+      // Handle errors (e.g., invalid credentials)
+      message.error('Login failed. Please check your username and password.');
+    }
   };
 
   return (

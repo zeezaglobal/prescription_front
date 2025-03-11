@@ -61,13 +61,6 @@ function Register() {
           <Input type="email" placeholder="Email" />
         </Form.Item>
 
-        <Form.Item
-          name="phone"
-          label="Phone Number"
-          rules={[{ required: true, message: 'Please input your phone number!' }]}
-        >
-          <Input type="tel" placeholder="Phone Number" />
-        </Form.Item>
 
         <Form.Item
           name="password"

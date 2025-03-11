@@ -5,7 +5,8 @@ const { Option } = Select;
 
 const DoctorForm = () => {
   const [form] = Form.useForm();
-
+  const token = localStorage.getItem('jwt_token');
+  console.log('Token:', token);
   const onFinish = (values) => {
     // handle the form submission logic here
     console.log('Form Values:', values);
