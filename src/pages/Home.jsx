@@ -1,24 +1,35 @@
+import { Layout, Typography, Button } from 'antd';
 import { Link } from 'react-router-dom';
-import { Button, Card, Typography } from 'antd';
+import './Home.css';
 
+const { Header, Content } = Layout;
 const { Title } = Typography;
 
-function Home() {
+export default function Home() {
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: '#f0f2f5' }}>
-      <Card style={{ padding: 24, textAlign: 'center', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
-        <Title level={2}>Welcome to Home Page</Title>
-        <div style={{ marginTop: 20 }}>
-          <Button type="primary" style={{ marginRight: 10 }}>
-            <Link to="/login">Login</Link>
-          </Button>
-          <Button type="default">
-            <Link to="/register">Register</Link>
-          </Button>
+    <Layout className="home-layout">
+      {/* Header with Bigger Logo and Navigation */}
+      <Header className="home-header">
+        <div className="logo bigger-logo">Medi<span className="text-green">Script</span></div>
+        <div className="nav-buttons">
+          <Button className="login-btn"><Link to="/login">Login</Link></Button>
+          <Button className="signup-btn"><Link to="/register">Signup</Link></Button>
         </div>
-      </Card>
-    </div>
+      </Header>
+
+      {/* Hero Section Adjusted for Larger Green Box (Moved to Left) */}
+      <Content className="home-content">
+        <div className="hero-container">
+          <div className="hero-box expanded-box wider-taller-box ">
+            <div className="text-container top-left-text moved-left">
+              <Title level={2} className="main-title"><span className="white-text">Make your</span> <br /> <span className="bold-text">Prescriptions Digital</span></Title>
+              <br/> <br/> <br/>
+              <Button className="download-btn">Download</Button>
+              <p className="subtext">Available for iOS and Android</p>
+            </div>
+          </div>
+        </div>
+      </Content>
+    </Layout>
   );
 }
-
-export default Home;
