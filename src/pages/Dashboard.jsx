@@ -6,20 +6,37 @@ import {
   SettingOutlined,
   LogoutOutlined,
 } from '@ant-design/icons';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Dashboard.css'; // Make sure this points to the final responsive CSS
-
+import DashboardView from './DashboardComponents/DashboardView';
+import PatientsView from './DashboardComponents/PatientsView';
+import PrescriptionsView from './DashboardComponents/PrescriptionsView';
+import SettingsView from './DashboardComponents/SettingsView';
 const { Sider, Content } = Layout;
 const { Title, Text } = Typography;
 
 const Dashboard = () => {
   const navigate = useNavigate();
-
+  const [selectedKey, setSelectedKey] = useState('1');
   const handleLogout = () => {
     localStorage.removeItem('jwt_token');
     navigate('/login');
   };
-
+  const renderContent = () => {
+    switch (selectedKey) {
+      case '1':
+        return <DashboardView />;
+      case '2':
+        return <PatientsView />;
+      case '3':
+        return <PrescriptionsView />;
+      case '4':
+        return <SettingsView />;
+      default:
+        return null;
+    }
+  };
   return (
     <Layout className="dashboard-main">
       <Sider
@@ -31,7 +48,8 @@ const Dashboard = () => {
       >
         <Menu
           mode="vertical"
-          defaultSelectedKeys={['1']}
+          selectedKeys={[selectedKey]}
+          onClick={({ key }) => setSelectedKey(key)}
           className="custom-menu"
         >
           <Menu.Item key="1" icon={<DashboardOutlined />}>
@@ -63,16 +81,7 @@ const Dashboard = () => {
       </Sider>
 
       <Layout>
-        <Content className="dashboard-content">
-          <div className="cards-container">
-            <Card className="stat-card">
-              <Text type="secondary">Total Patients</Text>
-              <Title level={3} style={{ color: '#134e4a' }}>234,455</Title>
-            </Card>
-            <Card className="stat-card"></Card>
-            <Card className="stat-card"></Card>
-          </div>
-        </Content>
+        <Content className="dashboard-content">{renderContent()}</Content>
       </Layout>
     </Layout>
   );
