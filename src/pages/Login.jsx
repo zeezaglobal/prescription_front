@@ -1,53 +1,73 @@
-import { Link, useNavigate } from 'react-router-dom';
-import { Form, Input, Button, Card, Typography, message } from 'antd';
+import { Form, Input, Button, message } from 'antd';
+import { UserOutlined } from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import './Login.css';
 
-const { Title, Text } = Typography;
-
-function Login() {
+const Login = () => {
   const navigate = useNavigate();
 
   const onFinish = async (values) => {
-    console.log('Input values:', values);
     try {
-      // Send the login request to the API
       const response = await axios.post('http://localhost:8080/auth/login', {
         username: values.username,
         password: values.password,
       });
 
-      // Handle success (you can store the token, if any, and redirect)
       if (response.status === 200) {
         message.success('Login successful');
-        console.log('Output values:', response.data);
         localStorage.setItem('jwt_token', response.data);
-        navigate('/doctorform'); // Redirect after successful login
+        navigate('/dashboard'); // navigate to dashboard (create it next)
       }
     } catch (error) {
-      // Handle errors (e.g., invalid credentials)
-      message.error('Login failed. Please check your username and password.');
+      message.error('Login failed. Please check your credentials.');
     }
   };
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: '#f0f2f5' }}>
-      <Card style={{ padding: 24, width: 300, textAlign: 'center', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
-        <Title level={2}>Login</Title>
-        <Form layout="vertical" onFinish={onFinish}>
-          <Form.Item label="Username" name="username" rules={[{ required: true, message: 'Please enter your username!' }]}>
-            <Input placeholder="Username" />
-          </Form.Item>
-          <Form.Item label="Password" name="password" rules={[{ required: true, message: 'Please enter your password!' }]}>
-            <Input.Password placeholder="Password" />
-          </Form.Item>
-          <Form.Item>
-            <Button type="primary" htmlType="submit" block>Login</Button>
-          </Form.Item>
-        </Form>
-        <Text>Don't have an account? <Link to="/register">Register</Link></Text>
-      </Card>
+    <div className="login-container">
+      <Form
+        name="login"
+        onFinish={onFinish}
+        className="login-form"
+        layout="vertical"
+      >
+        <Form.Item
+          name="username"
+          rules={[{ required: true, message: 'Please input your email ID!' }]}
+        >
+          <Input
+            size="large"
+            prefix={<UserOutlined />}
+            placeholder="Email ID"
+          />
+        </Form.Item>
+
+        <Form.Item
+          name="password"
+          rules={[{ required: true, message: 'Please input your password!' }]}
+        >
+          <Input.Password
+            size="large"
+            prefix={<UserOutlined />}
+            placeholder="Password"
+          />
+        </Form.Item>
+
+        <Form.Item>
+          <Button
+            type="primary"
+            htmlType="submit"
+            className="login-form-button"
+            size="large"
+            block
+          >
+            Login
+          </Button>
+        </Form.Item>
+      </Form>
     </div>
   );
-}
+};
 
 export default Login;
