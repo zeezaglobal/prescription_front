@@ -1,0 +1,26 @@
+.login-container {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f5f7fa;
+    padding: 20px;
+  }
+  
+  .login-form {
+    max-width: 400px;
+    width: 100%;
+  }
+  
+  .login-form-button {
+    background-color: #1abc9c;
+    border-color: #1abc9c;
+    font-weight: bold;
+  }
+  
+  .login-form-button:hover,
+  .login-form-button:focus {
+    background-color: #16a085 !important;
+    border-color: #16a085 !important;
+  }
+  
