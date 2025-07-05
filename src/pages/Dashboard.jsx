@@ -18,7 +18,7 @@ const { Title, Text } = Typography;
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const [selectedKey, setSelectedKey] = useState('1');
+  const [selectedKey, setSelectedKey] = useState('2');
   const handleLogout = () => {
     localStorage.removeItem('jwt_token');
     navigate('/login');

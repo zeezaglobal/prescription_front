@@ -1,65 +1,69 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Table, Tag, Space, Button } from 'antd';
+import api from '../../api/axios';
+import { useAuth } from '../../context/AuthContext';
 
 const { Column } = Table;
 
-const data = [
-  {
-    key: '1',
-    name: 'John Brown',
-    address: 'New York No. 1 Lake Park',
-    email: 'john@example.com',
-    phone: '123-456-7890',
-    age: 32,
-    tags: ['active'],
-  },
-  {
-    key: '2',
-    name: 'Jim Green',
-    address: 'London No. 1 Lake Park',
-    email: 'jim@example.com',
-    phone: '987-654-3210',
-    age: 42,
-    tags: ['inactive'],
-  },
-  {
-    key: '3',
-    name: 'Joe Black',
-    address: 'Sydney No. 1 Lake Park',
-    email: 'joe@example.com',
-    phone: '555-222-1111',
-    age: 29,
-    tags: ['new'],
-  },
-];
-
 const PatientsView = () => {
+  const { doctorId } = useAuth();
+  const [patients, setPatients] = useState([]);
+  const [pagination, setPagination] = useState({ current: 1, pageSize: 2, total: 0 });
+  const [loading, setLoading] = useState(false);
+
+  const fetchPatients = async (page = 1, pageSize = 2) => {
+    if (!doctorId) return;
+    setLoading(true);
+    try {
+      const res = await api.get(`/api/patients/doctor/${doctorId}`, {
+        params: {
+          page: page - 1, // API is 0-indexed
+          size: pageSize,
+          sort: 'firstName,asc',
+        },
+      });
+      setPatients(res.data.content || []);
+      setPagination({
+        current: page,
+        pageSize,
+        total: res.data.totalElements || 0,
+      });
+    } catch (err) {
+      setPatients([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchPatients(pagination.current, pagination.pageSize);
+    // eslint-disable-next-line
+  }, [doctorId]);
+
+  const handleTableChange = (pag) => {
+    fetchPatients(pag.current, pag.pageSize);
+  };
+
   return (
     <div style={{ padding: 24 }}>
       <h2>Patients</h2>
-      <Table dataSource={data} pagination={{ pageSize: 5 }}>
-        <Column title="Name" dataIndex="name" key="name" />
-        <Column title="Address" dataIndex="address" key="address" />
+      <Table
+        dataSource={patients.map((p, i) => ({ ...p, key: p.id || i }))}
+        pagination={{
+          current: pagination.current,
+          pageSize: pagination.pageSize,
+          total: pagination.total,
+          showSizeChanger: true,
+        }}
+        loading={loading}
+        onChange={handleTableChange}
+      >
+        <Column title="First Name" dataIndex="firstName" key="firstName" />
+        <Column title="Last Name" dataIndex="lastName" key="lastName" />
         <Column title="Email" dataIndex="email" key="email" />
         <Column title="Phone" dataIndex="phone" key="phone" />
         <Column title="Age" dataIndex="age" key="age" />
-        <Column
-          title="Tags"
-          dataIndex="tags"
-          key="tags"
-          render={(tags) => (
-            <>
-              {tags.map((tag) => {
-                let color = tag === 'inactive' ? 'volcano' : 'green';
-                return (
-                  <Tag color={color} key={tag}>
-                    {tag.toUpperCase()}
-                  </Tag>
-                );
-              })}
-            </>
-          )}
-        />
+        {/* Add more columns as needed */}
         <Column
           title="Action"
           key="action"
