@@ -1,110 +1,121 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Avatar, Flex, Switch } from 'antd';
-import { EditOutlined, EllipsisOutlined, SettingOutlined } from '@ant-design/icons';
+import axios from 'axios';
+import { Card, Button, Modal, Form, Input, message, Popconfirm, Spin, Flex } from 'antd';
+import { EditOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
-const actions = [
-  <EditOutlined key="edit" />,
-  <SettingOutlined key="setting" />,
-  <EllipsisOutlined key="ellipsis" />,
-];
+const { Meta } = Card;
 
 const DrugsPage = () => {
-  const [drug, setDrug] = useState({
-    serialNumber: '',
-    type: '',
-    name: '',
-    description: '',
-    type_name: '',
-    form: '',
-  });
-
   const [drugs, setDrugs] = useState([]);
-  const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(true);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
+  const [currentDrug, setCurrentDrug] = useState(null);
+  const [form] = Form.useForm();
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setDrug(prev => ({
-      ...prev,
-      [name]: value
-    }));
+  const apiBase = 'http://localhost:9090/api/drugs';
+
+  const fetchDrugs = async () => {
+    setLoading(true);
+    try {
+      const res = await axios.get(apiBase);
+      console.log('Fetched drugs:', res.data);
+      setDrugs(Array.isArray(res.data) ? res.data : []);
+    } catch (err) {
+      console.error(err);
+      message.error('Failed to load drugs');
+      setDrugs([]); // ensure drugs is an array to prevent .map error
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // UseEffect to set dummy data
   useEffect(() => {
-    const dummyData = [
-      {
-        id: 1,
-        serialNumber: 101,
-        type: 'Tablet',
-        name: 'Paracetamol',
-        description: 'Pain reliever and fever reducer.',
-        type_name: 'Analgesic',
-        form: 'Solid',
-      },
-      {
-        id: 2,
-        serialNumber: 102,
-        type: 'Syrup',
-        name: 'Ambroxol',
-        description: 'Expectorant for cough.',
-        type_name: 'Mucolytic',
-        form: 'Liquid',
-      },
-      {
-        id: 3,
-        serialNumber: 103,
-        type: 'Capsule',
-        name: 'Omeprazole',
-        description: 'Reduces stomach acid.',
-        type_name: 'Proton Pump Inhibitor',
-        form: 'Solid',
-      },
-    ];
-    setDrugs(dummyData);
-    setLoading(false);
+    fetchDrugs();
   }, []);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const newDrug = {
-      ...drug,
-      id: drugs.length + 1, // assign a dummy id
-      serialNumber: parseInt(drug.serialNumber, 10) || 0
-    };
-    setDrugs(prev => [...prev, newDrug]);
-    setMessage(`Drug "${drug.name}" added successfully.`);
-    setDrug({
-      serialNumber: '',
-      type: '',
-      name: '',
-      description: '',
-      type_name: '',
-      form: '',
-    });
+  const showModal = (drug = null) => {
+    setIsEdit(!!drug);
+    setCurrentDrug(drug);
+    if (drug) {
+      form.setFieldsValue(drug);
+    } else {
+      form.resetFields();
+    }
+    setIsModalVisible(true);
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+    setCurrentDrug(null);
+    form.resetFields();
+  };
+
+  const handleSubmit = async () => {
+    try {
+      const values = await form.validateFields();
+      if (isEdit && currentDrug) {
+        // Update drug
+        const updatedDrug = { ...currentDrug, ...values };
+        await axios.post(`${apiBase}/add`, updatedDrug);
+        message.success('Drug updated successfully');
+      } else {
+        // Add new drug
+        await axios.post(`${apiBase}/add`, values);
+        message.success('Drug added successfully');
+      }
+      fetchDrugs();
+      handleCancel();
+    } catch (err) {
+      console.error(err);
+      message.error('Failed to save drug');
+    }
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`${apiBase}/${id}`);
+      message.success('Drug deleted');
+      fetchDrugs();
+    } catch (err) {
+      console.error(err);
+      message.error('Failed to delete drug');
+    }
   };
 
   return (
-    <div className="container mt-5" style={{ maxWidth: '800px' }}>
-
-
-      <div>
+    <div className="container mt-5">
+      <div className="d-flex justify-content-between align-items-center mb-3">
         <h4>All Drugs</h4>
-        <Switch checked={!loading} onChange={checked => setLoading(!checked)} />
+        <Button type="primary" icon={<PlusOutlined />} onClick={() => showModal()}>
+          Add Drug
+        </Button>
+      </div>
+
+      <Spin spinning={loading}>
         <Flex gap="middle" align="start" wrap="wrap">
-          {drugs.map(drug => (
+          {Array.isArray(drugs) && drugs.map((drug) => (
             <Card
               key={drug.id}
-              loading={loading}
-              actions={actions}
-              style={{ minWidth: 300 }}
+              style={{ width: 300 }}
+              actions={[
+                <EditOutlined key="edit" onClick={() => showModal(drug)} />,
+                <Popconfirm
+                  title="Are you sure to delete this drug?"
+                  onConfirm={() => handleDelete(drug.id)}
+                  okText="Yes"
+                  cancelText="No"
+                >
+                  <DeleteOutlined key="delete" />
+                </Popconfirm>,
+              ]}
             >
-              <Card.Meta
-         
+              <Meta
                 title={`${drug.name} (${drug.type})`}
                 description={
                   <>
-                    <p>Serial Number: {drug.serialNumber}</p>
+                    <p>Serial: {drug.serialNumber}</p>
                     <p>Type Name: {drug.type_name}</p>
                     <p>Form: {drug.form}</p>
                     <p>{drug.description}</p>
@@ -114,7 +125,60 @@ const DrugsPage = () => {
             </Card>
           ))}
         </Flex>
-      </div>
+      </Spin>
+
+      <Modal
+        title={isEdit ? 'Edit Drug' : 'Add Drug'}
+        open={isModalVisible}
+        onCancel={handleCancel}
+        onOk={handleSubmit}
+        okText="Save"
+      >
+        <Form form={form} layout="vertical">
+          <Form.Item
+            label="Serial Number"
+            name="serialNumber"
+            rules={[{ required: true, message: 'Please enter serial number' }]}
+          >
+            <Input type="number" />
+          </Form.Item>
+          <Form.Item
+            label="Type"
+            name="type"
+            rules={[{ required: true, message: 'Please enter type' }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            label="Name"
+            name="name"
+            rules={[{ required: true, message: 'Please enter name' }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            label="Description"
+            name="description"
+            rules={[{ required: true, message: 'Please enter description' }]}
+          >
+            <Input.TextArea />
+          </Form.Item>
+          <Form.Item
+            label="Type Name"
+            name="type_name"
+            rules={[{ required: true, message: 'Please enter type name' }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            label="Form"
+            name="form"
+            rules={[{ required: true, message: 'Please enter form' }]}
+          >
+            <Input />
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 };
