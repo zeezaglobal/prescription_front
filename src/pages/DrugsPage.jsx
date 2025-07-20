@@ -14,8 +14,8 @@ const DrugsPage = () => {
   const [currentDrug, setCurrentDrug] = useState(null);
   const [form] = Form.useForm();
 
-  const apiBase = 'http://localhost:9090/api/drugs';
-
+  //const apiBase = 'http://localhost:9090/api/drugs';
+  const apiBase = 'https://indigorx.me/api/api/drugs';
   const fetchDrugs = async () => {
     setLoading(true);
     try {
