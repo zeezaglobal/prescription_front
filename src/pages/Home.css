@@ -1,147 +1,63 @@
-/* General Layout */
+/* General Styles */
 .home-layout {
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-color: #ffffff;
+  min-height: 100vh;
+}
+
+.logo.bigger-logo {
+  font-size: 2.2rem; /* Larger logo font size */
+  font-weight: bold;
+}
+
+.home-header {
+  background: #fff;
+  border-bottom: 1px solid #f0f0f0;
+  height: auto; /* Allow header height to adjust to content */
+}
+
+.hero-box {
+  max-width: 600px; /* Prevents the box from being too wide on large screens */
+  margin: 0 auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.main-title {
+  font-size: 2.5rem; /* Default font size for larger screens */
+  line-height: 1.2;
+}
+
+.store-logo {
+  height: 50px; /* Default height for larger screens */
+  transition: transform 0.2s ease-in-out;
+}
+
+.store-logo:hover {
+  transform: scale(1.05);
+}
+
+.subtext {
+  font-size: 1rem;
+}
+
+/* --- Mobile Responsive Styles --- */
+@media (max-width: 767.98px) {
+  .logo.bigger-logo {
+    font-size: 1.8rem; /* Slightly smaller logo on mobile */
   }
-  
-  /* Header Section */
+
+  /* Center the header content for the stacked mobile view */
   .home-header {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 60px 30px;
-    background: white;
-    position: relative; /* Removed fixed positioning */
-  }
-  
-  .logo {
-    font-size: 56px;
-    font-weight: bold;
-  }
-  
-  .text-green {
-    color: #0EB350;
-  }
-  
-  .nav-buttons {
-    display: flex;
-    gap: 16px;
-  }
-  
-  .login-btn, .signup-btn {
-    padding: 25px 24px;
-    font-size: 18px;
-    border-radius: 8px;
-    font-weight: bold;
-  }
-  
-  .login-btn {
-    background-color: #0EB350;
-    color: white;
-    border: none;
-  }
-  
-  .signup-btn {
-    background-color: black;
-    color: white;
-    border: none;
-  }
-  
-  /* Hero Section */
-  .home-content {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     text-align: center;
-    margin-top: 160px;
-    width: 100%;
-  }
-  
-  .hero-container {
-    display: flex;
-    justify-content: center;
-    width: 100%;
-  }
-  
-  .hero-box {
-    background: linear-gradient(135deg, #27B300, #0EB350);
-    padding: 130px 100px; /* Adjusted padding to maintain left proportion */
-    border-radius: 20px;
-    color: white;
-    width: 90vw;  /* Ensures the box takes up 90% of the viewport width */
-    max-width: 1600px; /* Prevents it from getting too wide on extra-large screens */
-    height: 75vh; /* Adjusted to make it proportional */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px; /* Reducing bottom margin */
   }
   
   .main-title {
-    font-size: 110px; /* Increased size */
-    font-weight: 700;
-    color: white;
-    margin-bottom: 40px;
-    text-align: left;
-    padding-left: 10px;
-    padding-top: 85px;
-    width: 100%;
-    transform: scale(1.2);
+    font-size: 2rem; /* Reduce title font size on mobile */
   }
-  
-  .bold-text {
-    font-weight: bold;
+
+  .store-logo {
+    height: 40px; /* Make store logos smaller on mobile */
   }
-  
-  .download-btn {
-    background-color: black;
-    color: white;
-    border: none;
-    padding: 39px 54px 48px;
-    font-size: 40px;
-    border-radius: 13px;
-    font-weight: bold;
-  }
-  
+
   .subtext {
-    margin-top: 16px;
-    font-size: 15px;
+    font-size: 0.9rem;
   }
-  
-  .expanded-box {
-    width: 85vw; /* Increased width */
-    max-width: 1500px; /* Larger max size */
-    height: 70vh; /* Increased height */
-    padding: 120px; /* Increased padding */
-  }
-  
-  .wider-taller-box {
-    width: 90vw; /* Increased width */
-    max-width: 1600px; /* Larger max size */
-    height: 75vh; /* Taller height */
-    padding: 130px 100px; /* Adjusted padding to correct left spacing */
-  }
-  
-  .larger-header {
-    padding: 30px 80px; /* Increase padding to make header taller */
-  }
-  
-  .bigger-logo {
-    font-size: 56px; /* Increase font size for Mediscript */
-  }
-  
-  .white-text {
-    color: white;
-  }
-  
-  .moved-left {
-    margin-left: -874px; /* Adjust this value to move it left as needed */
-  }
-  
+}
